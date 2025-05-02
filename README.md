@@ -18,3 +18,11 @@ coverage html
 ```shell
 pytest tests/test_pytest.py -v
 ```
+
+## Amazon Q
+
+### In code
+
+Add the next text in text editor:
+
+`# TODO: Create a test that doesn't allow the deposti to be negative`
