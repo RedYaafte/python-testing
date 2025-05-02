@@ -18,6 +18,8 @@ class BankAccount:
                 f.write(f"{message}\n")
 
     def deposit(self, amount: float) -> float:
+        if amount <= 0:
+            raise ValueError("Deposit amount must be positive.")
         if amount > 0:
             self.balance += amount
             self._log_transaction(f"Deposited {amount}, New balance: {self.balance}")
