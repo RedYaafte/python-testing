@@ -1,6 +1,8 @@
 import unittest, os
+from unittest.mock import patch
 
 from src.bank_account import BankAccount
+from src.exceptions import WithdrawalTimeRestrictionError
 
 
 class BankAccountTests(unittest.TestCase):
@@ -20,7 +22,9 @@ class BankAccountTests(unittest.TestCase):
         new_balance = self.account.deposit(500)
         self.assertEqual(new_balance, 1500)
 
-    def test_withdraw(self):
+    @patch("src.bank_account.datetime")
+    def test_withdraw(self, mock_datetime):
+        mock_datetime.now.return_value.hour = 10
         new_balance = self.account.withdraw(200)
         self.assertEqual(new_balance, 800)
 
@@ -35,3 +39,15 @@ class BankAccountTests(unittest.TestCase):
         self.assertEqual(self._count_lines(self.account.log_file), 1)
         self.account.deposit(500)
         self.assertEqual(self._count_lines(self.account.log_file), 2)
+
+    @patch("src.bank_account.datetime")
+    def test_withdraw_during_bussines_hours(self, mock_datetime):
+        mock_datetime.now.return_value.hour = 10
+        new_balance = self.account.withdraw(100)
+        self.assertEqual(new_balance, 900)
+
+    @patch("src.bank_account.datetime")
+    def test_withdraw_outside_bussines_hours(self, mock_datetime):
+        mock_datetime.now.return_value.hour = 22
+        with self.assertRaises(WithdrawalTimeRestrictionError):
+            self.account.withdraw(100)
