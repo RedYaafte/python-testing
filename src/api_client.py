@@ -18,7 +18,3 @@ def get_location(ip):
         "longitude": data["longitude"],
         "timezone": data["timeZone"],
     }
-
-
-if __name__ == "__main__":
-    print(get_location("8.8.8.8"))
