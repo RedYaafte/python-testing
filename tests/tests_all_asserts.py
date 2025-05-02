@@ -1,6 +1,9 @@
 import unittest
 
 
+SERVER = "server_a"
+
+
 class AllAssertsTests(unittest.TestCase):
     def test_assert_equal(self):
         self.assertEqual(1, 3 - 2)
@@ -35,3 +38,17 @@ class AllAssertsTests(unittest.TestCase):
     def test_assert_raises(self):
         with self.assertRaises(ZeroDivisionError):
             1 / 0
+
+    @unittest.skip("Trabajo en progreso, será habilitada nuevamente")
+    def test_skip(self):
+        self.assertEqual("hola", "chao")
+
+    @unittest.skipIf(
+        SERVER == "server_a", "No se encuentra en el servidor adecuado a ejecutar."
+    )
+    def test_skip_if(self):
+        self.assertEqual(100, 100)
+
+    @unittest.expectedFailure
+    def test_expected_failure(self):
+        self.assertEqual(100, 101)
