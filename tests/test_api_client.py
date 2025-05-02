@@ -1,5 +1,8 @@
 import unittest
 from unittest.mock import patch
+import unittest.mock
+
+import requests
 
 from src.api_client import get_location
 
@@ -25,3 +28,29 @@ class ApiClientTest(unittest.TestCase):
         self.assertEqual(response["region"], "California")
 
         mock_get.assert_called_once_with("https://freeipapi.com/api/json/8.8.8.8")
+
+    @patch("src.api_client.requests.get")
+    def test_get_location_returns_side_effect(self, mock_get):
+        mock_get.side_effect = [
+            requests.exceptions.RequestException("Service Unavailable"),
+            unittest.mock.Mock(
+                status_code=200,
+                json=lambda: {
+                    "ipAddress": "8.8.8.8",
+                    "countryName": "United States of America",
+                    "cityName": "Mountain View",
+                    "regionName": "California",
+                    "latitude": 37.386051,
+                    "longitude": -122.083847,
+                    "timeZone": "-07:00",
+                },
+            ),
+        ]
+
+        with self.assertRaises(requests.exceptions.RequestException):
+            get_location("8.8.8.8")
+
+        response = get_location("8.8.8.8")
+        self.assertEqual(response["country"], "United States of America")
+        self.assertEqual(response["city"], "Mountain View")
+        self.assertEqual(response["region"], "California")
