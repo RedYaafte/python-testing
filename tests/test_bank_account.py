@@ -51,3 +51,17 @@ class BankAccountTests(unittest.TestCase):
         mock_datetime.now.return_value.hour = 22
         with self.assertRaises(WithdrawalTimeRestrictionError):
             self.account.withdraw(100)
+
+    def test_deposit_multiple_ammounts(self):
+        test_cases = [
+            {"amount": 100, "expected_balance": 1100},
+            {"amount": 3000, "expected_balance": 4000},
+            {"amount": 4500, "expected_balance": 5500},
+        ]
+        for case in test_cases:
+            with self.subTest(case=case):
+                self.account = BankAccount(
+                    balance=1000, log_file="transaction_logs.txt"
+                )
+                new_balance = self.account.deposit(case["amount"])
+                self.assertEqual(new_balance, case["expected_balance"])
